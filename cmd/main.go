@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	fmt.Println("test package main build")
+	fmt.Println("test package 'main' build")
 	a := types.TestTypes("types")
 	fmt.Printf("loading package: %s", a)
+	
 }
