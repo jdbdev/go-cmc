@@ -1,16 +1,24 @@
 package config
 
 import (
+	"net/http"
 	"os"
 )
 
 // AppConfig holds all configuration settings for the application
 type AppConfig struct {
-	DB     DBConfig //imported from DBConfig struct
+	DB     DBConfig
 	APIKey string
+	AppCfg AppSettings
+	Srv    *http.Server
 }
 
-// DBConfig holds database configuration settings
+// AppSettings holds general application settings
+type AppSettings struct {
+	InProduciton bool
+}
+
+// DBConfig holds database  configuration settings
 type DBConfig struct {
 	Host     string
 	Port     string
@@ -30,6 +38,9 @@ func NewConfig() *AppConfig {
 			DBName:   getEnv("DB_NAME", "postgres"),
 		},
 		APIKey: getEnv("API_KEY", "123"),
+		AppCfg: AppSettings{
+			InProduciton: getEnv("IN_PRODUCTION", "false") == "true",
+		},
 	}
 }
 

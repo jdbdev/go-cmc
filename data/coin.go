@@ -1,12 +1,5 @@
 package data
 
-// lowercase = private
-// uppercase = public
-
-func TestTypes(x string) string {
-	return x
-}
-
 // Coin struct
 type Coin struct {
 	ID                int                   `json:"id"`

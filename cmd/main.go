@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/jdbdev/go-cmc/config"
+	"github.com/jdbdev/go-cmc/db"
 )
 
 func main() {
 	// Initialize config
-	var app = config.NewConfig()
-	fmt.Println(app.APIKey)
-	fmt.Println(app.DB.Host)
+	app := config.NewConfig()
 
+	// Connect to database
+	if err := db.Connect(app); err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	fmt.Println("Database connection successful")
 }
