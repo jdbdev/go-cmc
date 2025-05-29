@@ -2,25 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/jdbdev/go-cmc/types"
-	"github.com/joho/godotenv"
+	"github.com/jdbdev/go-cmc/config"
 )
 
 func main() {
-	fmt.Println("test package 'main' build")
-	// test package types integration:
-	a := types.TestTypes("types")
-	fmt.Printf("loading package: %s", a)
+	// Initialize config
+	var app = config.NewConfig()
+	fmt.Println(app.APIKey)
+	fmt.Println(app.DB.Host)
 
-	// load variables from .env file
-	err := godotenv.Load()
-  	if err != nil {
-    	log.Println("Error loading .env file")
- 	 }
-	// test .env KEY:VALUE:
-	fmt.Println(".env variable for TEST is:", os.Getenv("ENV1"))
-	
 }
