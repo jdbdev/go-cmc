@@ -16,6 +16,7 @@ type AppConfig struct {
 // AppSettings holds general application settings
 type AppSettings struct {
 	InProduciton bool
+	UseDB        bool
 }
 
 // DBConfig holds database configuration settings
@@ -31,7 +32,7 @@ type DBConfig struct {
 func NewConfig() *AppConfig {
 	return &AppConfig{
 		DB: DBConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
+			Host:     getEnv("DB_HOST", "postgres"),
 			Port:     getEnv("DB_PORT", "5432"),
 			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", "postgres"),
@@ -40,6 +41,7 @@ func NewConfig() *AppConfig {
 		APIKey: getEnv("API_KEY", "123"),
 		AppCfg: AppSettings{
 			InProduciton: getEnv("IN_PRODUCTION", "false") == "true",
+			UseDB:        getEnv("USE_DB", "false") == "true",
 		},
 	}
 }
