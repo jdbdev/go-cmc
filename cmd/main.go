@@ -13,10 +13,11 @@ func main() {
 	app := config.NewConfig()
 
 	// Connect to database
-	if err := db.Connect(app); err != nil {
+	database, err := db.NewDatabase(app)
+	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer database.Close()
 
 	fmt.Println("Database connection successful")
 }

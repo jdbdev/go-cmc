@@ -18,7 +18,7 @@ type AppSettings struct {
 	InProduciton bool
 }
 
-// DBConfig holds database  configuration settings
+// DBConfig holds database configuration settings
 type DBConfig struct {
 	Host     string
 	Port     string
