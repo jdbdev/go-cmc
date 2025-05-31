@@ -10,8 +10,8 @@ import (
 
 // Database represents a database connection and its methods
 type Database struct {
-	db  *sql.DB
-	cfg *config.AppConfig
+	db  *sql.DB           // Database connection instance
+	cfg *config.AppConfig // Application configuration settings
 }
 
 // NewDatabase creates and returns a new Database instance
