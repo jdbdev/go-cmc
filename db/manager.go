@@ -15,6 +15,7 @@ func SetDatabase(db *Database) {
 }
 
 // GetDatabase returns the global database instance
+// Use db.GetDatabase() from other packages
 func GetDatabase() *Database {
 	return instance
 }

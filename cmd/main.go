@@ -9,6 +9,7 @@ import (
 
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
+	"github.com/jdbdev/go-cmc/internal/ticker"
 )
 
 func main() {
@@ -44,6 +45,9 @@ func main() {
 	<-quit
 
 	fmt.Println("Shutting down gracefully...")
+
+	// Update DB with CMC Ticker
+	tickerService := ticker.NewTickerService(app)
 }
 
 // Init initializes the application configuration and prints to stdout basic information
