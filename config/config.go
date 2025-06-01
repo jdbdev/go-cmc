@@ -46,7 +46,7 @@ func NewConfig() *AppConfig {
 		},
 		CMC: CMCSettings{
 			APIKey:  getEnv("CMC_API_KEY", "123"),
-			BaseURL: getEnv("CMC_BASE_URL", "https://pro-api.coinmarketcap.com/v1/"),
+			BaseURL: getEnv("CMC_BASE_URL", ""),
 		},
 
 		AppCfg: AppSettings{

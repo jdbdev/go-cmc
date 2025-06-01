@@ -10,6 +10,7 @@ import (
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
 	"github.com/jdbdev/go-cmc/internal/ticker"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -37,6 +38,18 @@ func main() {
 				log.Println("Database ping successful")
 			}
 		}
+
+		// Initialize and use ticker service
+		tickerService := ticker.NewTickerService(app)
+
+		// Fetch and update data
+		if err := tickerService.GetCMCData(); err != nil {
+			log.Printf("Error fetching CMC data: %v", err)
+		}
+
+		if err := tickerService.UpdateDB(); err != nil {
+			log.Printf("Error updating database: %v", err)
+		}
 	}
 
 	// Wait for interrupt signal to gracefully shut down
@@ -45,15 +58,23 @@ func main() {
 	<-quit
 
 	fmt.Println("Shutting down gracefully...")
-
-	// Update DB with CMC Ticker
-	tickerService := ticker.NewTickerService(app)
 }
 
 // Init initializes the application configuration and prints to stdout basic information
 func Init() *config.AppConfig {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: Error loading .env file: %v", err)
+	}
+
 	app := config.NewConfig()
+	PrintSettings(app)
+	return app
+}
+
+// TEMP ONLY
+func PrintSettings(app *config.AppConfig) {
 	fmt.Printf("App in production: %v\n", app.AppCfg.InProduciton)
 	fmt.Printf("Use DB: %v\n", app.AppCfg.UseDB)
-	return app
+	fmt.Printf("Base URL: %v\n", app.CMC.BaseURL)
 }
