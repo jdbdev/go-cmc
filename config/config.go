@@ -30,8 +30,9 @@ type DBSettings struct {
 
 // CMCCOnfig holds Coinmarketcap API configuration
 type CMCSettings struct {
-	APIKey  string
-	BaseURL string
+	APIKey    string
+	BaseURL   string
+	QuotesURL string
 }
 
 // NewConfig creates and returns a new AppConfig instance
@@ -45,8 +46,9 @@ func NewAppConfig() *AppConfig {
 			DBName:   getEnv("DB_NAME", "postgres"),
 		},
 		CMC: CMCSettings{
-			APIKey:  getEnv("CMC_API_KEY", "123"),
-			BaseURL: getEnv("CMC_BASE_URL", ""),
+			APIKey:    getEnv("CMC_API_KEY", "123"),
+			BaseURL:   getEnv("CMC_BASE_URL", ""),
+			QuotesURL: getEnv("CMC_QUOTES_URL", ""),
 		},
 
 		AppCfg: AppSettings{
