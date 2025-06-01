@@ -1,6 +1,6 @@
 ## Project Summary:
 
-This module implements a connection the the Coinmarketcap API to gather current token/coin information and update the Database on a set time interval <br>
+Stand alone service to call CoinMarketcap API and update database with up to date data for each coin/token. 
 
 ### License
 MIT

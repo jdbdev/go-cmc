@@ -12,6 +12,7 @@ var client = &http.Client{}
 
 type TickerInterface interface {
 	FetchCMCData() error
+	DecodeData() error
 	UpdateDB() error
 }
 
@@ -32,6 +33,10 @@ func NewTickerService(app *config.AppConfig) *TickerService {
 
 // FetchCMCData gets up to date data from CMC
 func (t *TickerService) GetCMCData() error {
+	return nil
+}
+
+func (t *TickerService) DecodeData() error {
 	return nil
 }
 
