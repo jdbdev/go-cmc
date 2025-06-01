@@ -35,7 +35,7 @@ type CMCSettings struct {
 }
 
 // NewConfig creates and returns a new AppConfig instance
-func NewConfig() *AppConfig {
+func NewAppConfig() *AppConfig {
 	return &AppConfig{
 		DB: DBSettings{
 			Host:     getEnv("DB_HOST", "postgres"),

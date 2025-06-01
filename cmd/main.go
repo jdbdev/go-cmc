@@ -10,15 +10,22 @@ import (
 
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
+	"github.com/jdbdev/go-cmc/internal/ticker"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	//==========================================================================
+	// Configuration & Setup
+	//==========================================================================
+
 	// Initialize config
 	app := Init()
 
-	// Initialize ticker service
-	// tickerService := ticker.NewTickerService(app)
+	// Initialize updater service
+	tickerService := ticker.NewTickerService(app)
+	fmt.Println(tickerService)
 
 	// Connect to database
 	if app.AppCfg.UseDB {
@@ -43,11 +50,15 @@ func main() {
 		}
 	}
 
-	// Call CMC API every 5 seconds and update DB
+	//==========================================================================
+	// Go Routines
+	//==========================================================================
+
+	// Call CMC API every x seconds and update DB
 	// Continues even with errors
-	ticker := time.NewTicker(2 * time.Second)
+	updater := time.NewTicker(10 * time.Second)
 	go func() {
-		for range ticker.C {
+		for range updater.C {
 			fmt.Println("Updating CMC Data...")
 
 			// if err := tickerService.GetCMCData(); err != nil {
@@ -63,7 +74,11 @@ func main() {
 			// fmt.Println("CMC Data Update Complete")
 		}
 	}()
-	defer ticker.Stop()
+	defer updater.Stop()
+
+	//==========================================================================
+	// Application Shutdown
+	//==========================================================================
 
 	// Wait for interrupt signal to gracefully shut down
 	quit := make(chan os.Signal, 1)
@@ -80,7 +95,7 @@ func Init() *config.AppConfig {
 		log.Printf("Warning: Error loading .env file: %v", err)
 	}
 
-	app := config.NewConfig()
+	app := config.NewAppConfig()
 	PrintSettings(app)
 	return app
 }
