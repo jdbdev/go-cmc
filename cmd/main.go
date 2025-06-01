@@ -25,7 +25,6 @@ func main() {
 
 	// Initialize updater service
 	tickerService := ticker.NewTickerService(app)
-	fmt.Println(tickerService)
 
 	// Connect to database
 	if app.AppCfg.UseDB {
@@ -51,20 +50,20 @@ func main() {
 	}
 
 	//==========================================================================
-	// Go Routines
+	// Go Routine: Data Update Service
 	//==========================================================================
 
 	// Call CMC API every x seconds and update DB
-	// Continues even with errors
-	updater := time.NewTicker(10 * time.Second)
+	// Loop will continue even with errors
+	updater := time.NewTicker(5 * time.Second)
 	go func() {
 		for range updater.C {
 			fmt.Println("Updating CMC Data...")
 
-			// if err := tickerService.GetCMCData(); err != nil {
-			// 	log.Printf("Error fetching CMC data: %v", err)
-			// 	continue
-			// }
+			if err := tickerService.FetchAndDecodeData(); err != nil {
+				log.Printf("Error fetching CMC data: %v", err)
+				continue
+			}
 
 			// if err := tickerService.UpdateDB(); err != nil {
 			// 	log.Printf("Error updating database: %v", err)
