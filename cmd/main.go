@@ -6,16 +6,19 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
-	"github.com/jdbdev/go-cmc/internal/ticker"
 	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Initialize config
 	app := Init()
+
+	// Initialize ticker service
+	// tickerService := ticker.NewTickerService(app)
 
 	// Connect to database
 	if app.AppCfg.UseDB {
@@ -38,19 +41,29 @@ func main() {
 				log.Println("Database ping successful")
 			}
 		}
-
-		// Initialize and use ticker service
-		tickerService := ticker.NewTickerService(app)
-
-		// Fetch and update data
-		if err := tickerService.GetCMCData(); err != nil {
-			log.Printf("Error fetching CMC data: %v", err)
-		}
-
-		if err := tickerService.UpdateDB(); err != nil {
-			log.Printf("Error updating database: %v", err)
-		}
 	}
+
+	// Call CMC API every 5 seconds and update DB
+	// Continues even with errors
+	ticker := time.NewTicker(2 * time.Second)
+	go func() {
+		for range ticker.C {
+			fmt.Println("Updating CMC Data...")
+
+			// if err := tickerService.GetCMCData(); err != nil {
+			// 	log.Printf("Error fetching CMC data: %v", err)
+			// 	continue
+			// }
+
+			// if err := tickerService.UpdateDB(); err != nil {
+			// 	log.Printf("Error updating database: %v", err)
+			// 	continue
+			// }
+
+			// fmt.Println("CMC Data Update Complete")
+		}
+	}()
+	defer ticker.Stop()
 
 	// Wait for interrupt signal to gracefully shut down
 	quit := make(chan os.Signal, 1)
