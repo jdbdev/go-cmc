@@ -26,3 +26,6 @@ go.work.sum
 
 # project folders and files
 /tmp
+
+# Random utility files 
+COMMANDS.md
