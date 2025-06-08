@@ -33,6 +33,7 @@ type CMCSettings struct {
 	APIKey    string
 	BaseURL   string
 	QuotesURL string
+	IDMapURL  string
 }
 
 // NewConfig creates and returns a new AppConfig instance
@@ -49,6 +50,7 @@ func NewAppConfig() *AppConfig {
 			APIKey:    getEnv("CMC_API_KEY", "123"),
 			BaseURL:   getEnv("CMC_BASE_URL", ""),
 			QuotesURL: getEnv("CMC_QUOTES_URL", ""),
+			IDMapURL:  getEnv("CMC_ID_MAP_URL", ""),
 		},
 
 		AppCfg: AppSettings{

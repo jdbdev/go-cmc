@@ -1,20 +1,24 @@
 package data
 
-// Coin struct
-type Coin struct {
-	ID                int                   `json:"id"`
-	Name              string                `json:"name"`
-	Symbol            string                `json:"symbol"`
-	Slug              string                `json:"website_slug"`
-	Rank              int                   `json:"rank"`
-	CirculatingSupply float64               `json:"circulating_supply"`
-	TotalSupply       float64               `json:"total_supply"`
-	MaxSupply         float64               `json:"max_supply"`
-	Quotes            map[string]*CoinQuote `json:"quotes"`
-	LastUpdated       int                   `json:"last_updated"`
+// Coin struct holds static data and time of last CMC update
+type CoinInfo struct {
+	ID          int                   `json:"id"`           // static
+	CMCID       int                   `json:"cmc_rank"`     // static
+	Name        string                `json:"name"`         // static
+	Symbol      string                `json:"symbol"`       // static
+	Slug        string                `json:"website_slug"` // static
+	Quotes      map[string]*CoinQuote `json:"quotes"`       // dynamic
+	LastUpdated int                   `json:"last_updated"` // dynamic
 }
 
-// CoinQuote struct
+// CoinSupply holds data related to supply
+type CoinSupply struct {
+	CirculatingSupply float64 `json:"circulating_supply"` // dynamic
+	TotalSupply       float64 `json:"total_supply"`       // dynamic
+	MaxSupply         float64 `json:"max_supply"`         // dynamic
+}
+
+// CoinQuote struct holds dynamic price and volume data
 type CoinQuote struct {
 	Price            float64 `json:"price"`
 	Volume24H        float64 `json:"volume_24h"`

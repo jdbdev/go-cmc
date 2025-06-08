@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/jdbdev/go-cmc/config"
+	"github.com/jdbdev/go-cmc/utils"
 )
 
 // TEMP CMCIDMap is a map of CMC ID's
@@ -82,22 +83,35 @@ func (t *TickerService) FetchAndDecodeData() error {
 	// Set headers
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("X-CMC_PRO_API_KEY", t.apiKey)
+
 	// Add query parameters to URL
 	req.URL.RawQuery = q.Encode()
 
-	fmt.Printf("Making request to: %s\n", req.URL.String()) // Debug URL
+	// Debug URL
+	fmt.Printf("Making request to: %s\n", req.URL.String())
+
+	// Execute request
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
+	// Print Response Status
 	fmt.Printf("Response Status: %s\n", resp.Status)
+
+	// Read and debug response body
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 	fmt.Printf("Response Body: %s\n\n\n", string(respBody))
+
+	// Write response body to file
+	err = utils.WriteResponseToFile(respBody)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
