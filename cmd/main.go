@@ -10,8 +10,8 @@ import (
 
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
+	"github.com/jdbdev/go-cmc/internal/mapper"
 	"github.com/jdbdev/go-cmc/internal/ticker"
-	"github.com/jdbdev/go-cmc/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -27,9 +27,11 @@ func main() {
 	// Initialize updater service
 	tickerService := ticker.NewTickerService(app)
 
-	// Initialize IDmapping service
-	mapIDService := utils.NewIDMapService(app)
-	mapIDService.FetchIDMap()
+	// Initialize IDmapper
+	var mapIDService mapper.IDMapInterface = mapper.NewIDMapService(app) // declares var as interface type and assigns concrete implementation
+	if err := mapIDService.Initialize(); err != nil {
+		log.Fatal("Failed to initialize ID map to fetch data from Coinmarketcap", err)
+	}
 
 	// Connect to database
 	if app.AppCfg.UseDB {
