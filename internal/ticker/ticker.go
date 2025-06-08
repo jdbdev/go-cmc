@@ -44,7 +44,7 @@ type TickerService struct {
 	// data    []TickerData // Add a field to store the decoded data
 }
 
-// NewTickerService creates a new instance of the TickerService
+// NewTickerService creates a new instance of the TickerService struct
 func NewTickerService(app *config.AppConfig) *TickerService {
 	return &TickerService{
 		apiKey:    app.CMC.APIKey,
@@ -107,8 +107,8 @@ func (t *TickerService) FetchAndDecodeData() error {
 	}
 	fmt.Printf("Response Body: %s\n\n\n", string(respBody))
 
-	// Write response body to file
-	err = utils.WriteResponseToFile(respBody)
+	// Write response body to file (provide file name)
+	err = utils.WriteJSONToFile(respBody, "sample_response")
 	if err != nil {
 		return err
 	}
