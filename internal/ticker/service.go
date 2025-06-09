@@ -19,15 +19,12 @@ import (
 	"strings"
 
 	"github.com/jdbdev/go-cmc/config"
+	"github.com/jdbdev/go-cmc/internal/mapper"
 	"github.com/jdbdev/go-cmc/utils"
 )
 
 // TEMP CMCIDMap is a map of CMC ID's
-var CMCIDMap = map[string]string{
-	"BTC": "1",
-	"ETH": "1027",
-	"SOL": "5994",
-}
+var CMCIDMap = mapper.IDMapService.idMap
 
 var client = &http.Client{}
 
@@ -41,16 +38,18 @@ type TickerService struct {
 	baseURL   string
 	quotesURL string
 	client    *http.Client
+	mapper    mapper.IDMapInterface // example: mapper.GetIDMap()
 	// data    []TickerData // Add a field to store the decoded data
 }
 
 // NewTickerService creates a new instance of the TickerService struct
-func NewTickerService(app *config.AppConfig) *TickerService {
+func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface) *TickerService {
 	return &TickerService{
 		apiKey:    app.CMC.APIKey,
 		baseURL:   app.CMC.BaseURL,
 		quotesURL: app.CMC.QuotesURL,
 		client:    client,
+		mapper:    mapService,
 	}
 }
 
@@ -67,7 +66,7 @@ func (t *TickerService) FetchAndDecodeData() error {
 
 	// Collect all IDs from the map
 	var ids []string
-	for _, id := range CMCIDMap {
+	for _, id := range t.mapper.GetIDMap() {
 		ids = append(ids, id)
 	}
 	// Join IDs with commas and add to query

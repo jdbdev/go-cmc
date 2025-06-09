@@ -72,16 +72,16 @@ func (i *IDMapService) FetchIDMap() (*CmcIdMapResponse, error) {
 	}
 
 	// Create CmcIdMapResponse instance in stack memory
-	idMap := CmcIdMapResponse{}
+	response := CmcIdMapResponse{}
 
 	// Unmarshal response into CmcIdMapResponse struct instance
-	err = json.Unmarshal(respBody, &idMap)
+	err = json.Unmarshal(respBody, &response)
 	if err != nil {
 		return nil, err
 	}
 
 	fmt.Printf("CMC Map Response Body: \n\n%s\n\n", string(respBody))
-	return &idMap, nil
+	return &response, nil
 }
 
 // Initialize loads the IDMapService.idMap with fallbacks following this order;
@@ -89,11 +89,21 @@ func (i *IDMapService) FetchIDMap() (*CmcIdMapResponse, error) {
 // 2. Fetch from API
 // 3. Fallback to hard coded map
 func (i *IDMapService) Initialize() error {
-	// TODO: Implement DB loading
-	// TODO: Implement API loading
-	// Load fallback ID map
+	// Load from DB
+	// If DB fails, load from CMC API
+	if resp, err := i.FetchIDMap(); err == nil {
+		for _, coin := range resp.Data {
+			i.idMap[coin.Symbol] = strconv.Itoa(coin.ID)
+		}
+		return nil
+	}
+	// If DB and API call fail, load fallback ID map
 	i.idMap = fallbackIDMap
 	return nil
+}
+
+func (i *IDMapService) GetIDMap() map[string]string {
+	return i.idMap
 }
 
 // UpdateDB updates the database with the latest CMC ID mappings

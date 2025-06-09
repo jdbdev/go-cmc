@@ -24,14 +24,13 @@ func main() {
 	// Initialize config
 	app := Init()
 
-	// Initialize updater service
-	tickerService := ticker.NewTickerService(app)
-
-	// Initialize IDmapper
-	var mapIDService mapper.IDMapInterface = mapper.NewIDMapService(app) // declares var as interface type and assigns concrete implementation
-	if err := mapIDService.Initialize(); err != nil {
+	// Initialize ID Mapper Service
+	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app) // declare var as interface type and assign concrete implementation
+	if err := IDMapSrvc.Initialize(); err != nil {
 		log.Fatal("Failed to initialize ID map to fetch data from Coinmarketcap", err)
 	}
+	// Initialize ticker service
+	tickerService := ticker.NewTickerService(app, IDMapSrvc)
 
 	// Connect to database
 	if app.AppCfg.UseDB {

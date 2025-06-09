@@ -5,6 +5,7 @@ type IDMapInterface interface {
 	FetchIDMap() (*CmcIdMapResponse, error)
 	UpdateDB() error
 	Initialize() error
+	GetIDMap() map[string]string
 }
 
 // CmcIdMapResponse is the struct to store the ID map from Coinmarketcap.
