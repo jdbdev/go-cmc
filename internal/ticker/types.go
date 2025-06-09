@@ -1,6 +1,6 @@
-package data
+package ticker
 
-// Coin struct holds static data and time of last CMC update
+// CoinInfo holds static data and time of last CMC update
 type CoinInfo struct {
 	ID          int                   `json:"id"`           // static
 	CMCID       int                   `json:"cmc_rank"`     // static
@@ -18,7 +18,7 @@ type CoinSupply struct {
 	MaxSupply         float64 `json:"max_supply"`         // dynamic
 }
 
-// CoinQuote struct holds dynamic price and volume data
+// CoinQuote holds dynamic price and volume data
 type CoinQuote struct {
 	Price            float64 `json:"price"`
 	Volume24H        float64 `json:"volume_24h"`

@@ -23,9 +23,6 @@ import (
 	"github.com/jdbdev/go-cmc/utils"
 )
 
-// TEMP CMCIDMap is a map of CMC ID's
-var CMCIDMap = mapper.IDMapService.idMap
-
 var client = &http.Client{}
 
 type TickerInterface interface {
