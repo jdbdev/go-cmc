@@ -32,7 +32,7 @@ func main() {
 	// Initialize ticker service
 	tickerService := ticker.NewTickerService(app, IDMapSrvc)
 
-	// Connect to database
+	// Create connection to database
 	if app.AppCfg.UseDB {
 		database, err := db.NewDatabase(app)
 		if err != nil {
@@ -54,6 +54,9 @@ func main() {
 			}
 		}
 	}
+
+	// Check and/or Initialize DB tables
+	db.Initialize()
 
 	//==========================================================================
 	// Go Routine: Data Update Service
