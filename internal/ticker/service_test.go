@@ -1,4 +1,4 @@
-// package ticker
+package ticker
 
 // import (
 // 	"net/http"

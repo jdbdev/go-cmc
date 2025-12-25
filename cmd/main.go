@@ -56,7 +56,7 @@ func main() {
 	}
 
 	// Check and/or Initialize DB tables
-	db.Initialize()
+	// db.Initialize()
 
 	//==========================================================================
 	// Go Routine: Data Update Service
