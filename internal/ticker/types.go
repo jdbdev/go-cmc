@@ -23,7 +23,7 @@ type Status struct {
 
 // CoinInfo holds the coin related information from CMC API, including CoinQuote data.
 type CoinInfo struct {
-	ID                int                  `json:"id"`
+	CmcID             int                  `json:"id"` // CMC ID is recommended by CMC API documentation
 	Name              string               `json:"name"`
 	Symbol            string               `json:"symbol"`
 	Slug              string               `json:"slug"`
