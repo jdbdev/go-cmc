@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -27,10 +28,11 @@ type IDMapService struct {
 	mapURL string
 	client *http.Client
 	idMap  map[string]string
+	logger *slog.Logger
 }
 
 // NewIDMapService creates a new instance of IDMapService struct
-func NewIDMapService(app *config.AppConfig) *IDMapService {
+func NewIDMapService(app *config.AppConfig, logger *slog.Logger) *IDMapService {
 	return &IDMapService{
 		apiKey: app.CMC.APIKey,
 		mapURL: app.CMC.IDMapURL,

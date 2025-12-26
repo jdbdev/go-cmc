@@ -14,6 +14,7 @@ package ticker
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -36,17 +37,19 @@ type TickerService struct {
 	quotesURL string
 	client    *http.Client
 	mapper    mapper.IDMapInterface // example: mapper.GetIDMap()
+	logger    *slog.Logger
 	// data    []TickerData // Add a field to store the decoded data
 }
 
 // NewTickerService creates a new instance of the TickerService struct
-func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface) *TickerService {
+func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface, logger *slog.Logger) *TickerService {
 	return &TickerService{
 		apiKey:    app.CMC.APIKey,
 		baseURL:   app.CMC.BaseURL,
 		quotesURL: app.CMC.QuotesURL,
 		client:    client,
 		mapper:    mapService,
+		logger:    logger,
 	}
 }
 

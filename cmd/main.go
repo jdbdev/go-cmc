@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,19 +19,28 @@ import (
 func main() {
 
 	//==========================================================================
-	// Configuration & Setup
+	// Configuration & Initialization/Setup
 	//==========================================================================
 
 	// Initialize config
 	app := Init()
 
-	// Initialize ID Mapper Service
-	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app) // declare var as interface type and assign concrete implementation
+	// Initialize Logger
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+	slog.Info("CMC API application starting - Version 0.1")
+
+	// Initialize Mapper Service (with dependency injection of app and logger)
+	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app, logger)
 	if err := IDMapSrvc.Initialize(); err != nil {
 		log.Fatal("Failed to initialize ID map to fetch data from Coinmarketcap", err)
 	}
-	// Initialize ticker service
-	tickerService := ticker.NewTickerService(app, IDMapSrvc)
+	// Initialize ticker service (with dependency injection of app and logger)
+	tickerService := ticker.NewTickerService(app, IDMapSrvc, logger)
+
+	//==========================================================================
+	// Database Setup
+	//==========================================================================
 
 	// Create connection to database
 	if app.AppCfg.UseDB {
@@ -64,7 +74,7 @@ func main() {
 
 	// Call CMC API every x seconds and update DB
 	// Loop will continue even with errors
-	updater := time.NewTicker(5 * time.Second)
+	updater := time.NewTicker(120 * time.Second)
 	go func() {
 		for range updater.C {
 			fmt.Println("Updating CMC Data...")
