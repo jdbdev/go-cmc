@@ -16,6 +16,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// go-cmc app requires two services to run: internal/mapper and internal/ticker.
+// mapper service generates an ID map based on Coinmarketcap ID's for all tokens.
+// ticker service fetches up to date data for each token/coin in the ID map.
+// both services run concurrently at set intervals found in config/config.go file. Adjust based on API credit expenditure.
+// both services update the database with up to date data.
+
 func main() {
 
 	//==========================================================================
@@ -74,7 +80,8 @@ func main() {
 
 	// Call CMC API every x seconds and update DB
 	// Loop will continue even with errors
-	updater := time.NewTicker(120 * time.Second)
+	timeInterval := app.Interval.TickerInterval
+	updater := time.NewTicker(timeInterval)
 	go func() {
 		for range updater.C {
 			fmt.Println("Updating CMC Data...")

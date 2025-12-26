@@ -3,14 +3,16 @@ package config
 import (
 	"net/http"
 	"os"
+	"time"
 )
 
 // AppConfig holds all configuration settings for the application
 type AppConfig struct {
-	DB     DBSettings
-	CMC    CMCSettings
-	AppCfg AppSettings
-	Srv    *http.Server
+	DB       DBSettings
+	CMC      CMCSettings
+	AppCfg   AppSettings
+	Srv      *http.Server
+	Interval IntervalSettings
 }
 
 // AppCofig holds general application settings
@@ -36,6 +38,12 @@ type CMCSettings struct {
 	IDMapURL  string
 }
 
+// IntervalSettings holds the time settings in secondsfor the ticker and mapper services
+type IntervalSettings struct {
+	TickerInterval time.Duration
+	MapperInterval time.Duration
+}
+
 // NewConfig creates and returns a new AppConfig instance
 func NewAppConfig() *AppConfig {
 	return &AppConfig{
@@ -57,6 +65,11 @@ func NewAppConfig() *AppConfig {
 			InProduciton: getEnv("IN_PRODUCTION", "false") == "true",
 			UseDB:        getEnv("USE_DB", "false") == "true",
 		},
+
+		Interval: IntervalSettings{
+			TickerInterval: getEnvAsDuration("TICKER_INTERVAL", "2m"),
+			MapperInterval: getEnvAsDuration("MAPPER_INTERVAL", "24h"),
+		},
 	}
 }
 
@@ -66,4 +79,16 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+// getEnvAsDuration() function to get env variables as duration from .env file
+func getEnvAsDuration(key, defaultValue string) time.Duration {
+	value := getEnv(key, defaultValue)
+	duration, err := time.ParseDuration(value)
+	if err != nil {
+		// If parsing fails, return default
+		defaultDuration, _ := time.ParseDuration(defaultValue)
+		return defaultDuration
+	}
+	return duration
 }
