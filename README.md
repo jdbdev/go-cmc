@@ -17,7 +17,7 @@ The app relies on 2 main packages/services:
 - Get an API key from [Coinmarketcap](https://coinmarketcap.com/api/)
 - Rename .env.example to .env
 - Add your API Key to .env CMC_API_KEY=
-- In main.go, set the time interval for the API call based on how many credits you want to spend. Default set to 10 seconds (updater := time.NewTicker(10 * time.Second))
+- In .env, set the time interval for the API call based on how many credits you want to spend. Default set to 120 seconds for ticker.
 - Run in command prompt: 
     ```shell
     docker-compose up --build
