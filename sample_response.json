@@ -1,1 +1,108 @@
-{"status":{"timestamp":"2025-06-08T17:06:41.049Z","error_code":0,"error_message":null,"elapsed":24,"credit_count":1,"notice":null},"data":{"1":{"id":1,"name":"Bitcoin","symbol":"BTC","slug":"bitcoin","circulating_supply":19876125,"total_supply":19876125,"infinite_supply":false,"self_reported_circulating_supply":null,"self_reported_market_cap":null,"tvl_ratio":null,"last_updated":"2025-06-08T17:05:00.000Z","quote":{"USD":{"price":106303.51350892942,"volume_24h":36004357993.412094,"volume_24h_reported":120993203969.8504,"volume_change_24h":-9.8812,"percent_change_1h":0.1873162,"percent_change_24h":0.77840735,"percent_change_7d":1.12191042,"percent_change_30d":3.69944804,"percent_change_60d":35.26952498,"percent_change_90d":35.35477322,"market_cap":2112901922442.6697,"market_cap_dominance":63.703,"fully_diluted_market_cap":2232373783687.52,"tvl":null,"last_updated":"2025-06-08T17:05:00.000Z"}}},"1027":{"id":1027,"name":"Ethereum","symbol":"ETH","slug":"ethereum","circulating_supply":120723050.14925605,"total_supply":120723050.14925605,"infinite_supply":true,"self_reported_circulating_supply":null,"self_reported_market_cap":null,"tvl_ratio":null,"last_updated":"2025-06-08T17:06:00.000Z","quote":{"USD":{"price":2533.7164611109547,"volume_24h":10080682598.17824,"volume_24h_reported":85209565722.6567,"volume_change_24h":-18.18,"percent_change_1h":0.59115357,"percent_change_24h":0.78071204,"percent_change_7d":-0.23930475,"percent_change_30d":9.76160402,"percent_change_60d":67.6644515,"percent_change_90d":29.99491191,"market_cap":305877979398.69336,"market_cap_dominance":9.2221,"fully_diluted_market_cap":305877979398.69,"tvl":null,"last_updated":"2025-06-08T17:06:00.000Z"}}},"5994":{"id":5994,"name":"Shiba Inu","symbol":"SHIB","slug":"shiba-inu","circulating_supply":589249398021027.9,"total_supply":589503932301883.2,"infinite_supply":false,"self_reported_circulating_supply":589551575078137,"self_reported_market_cap":7471476061.050057,"tvl_ratio":null,"last_updated":"2025-06-08T17:05:00.000Z","quote":{"USD":{"price":0.000012673150877528934,"volume_24h":87682260.39516963,"volume_24h_reported":334612821.8711,"volume_change_24h":-15.7752,"percent_change_1h":0.62180385,"percent_change_24h":-0.3901891,"percent_change_7d":-2.50743844,"percent_change_30d":-14.35435405,"percent_change_60d":13.36091173,"percent_change_90d":4.17549167,"market_cap":7467646525.613585,"market_cap_dominance":0.2251,"fully_diluted_market_cap":7471490258.22,"tvl":null,"last_updated":"2025-06-08T17:05:00.000Z"}}}}}
+{
+    "status": {
+        "timestamp": "2025-06-08T17:06:41.049Z",
+        "error_code": 0,
+        "error_message": null,
+        "elapsed": 24,
+        "credit_count": 1,
+        "notice": null
+    },
+    "data": {
+        "1": {
+            "id": 1,
+            "name": "Bitcoin",
+            "symbol": "BTC",
+            "slug": "bitcoin",
+            "circulating_supply": 19876125,
+            "total_supply": 19876125,
+            "infinite_supply": false,
+            "self_reported_circulating_supply": null,
+            "self_reported_market_cap": null,
+            "tvl_ratio": null,
+            "last_updated": "2025-06-08T17:05:00.000Z",
+            "quote": {
+                "USD": {
+                    "price": 106303.51350892942,
+                    "volume_24h": 36004357993.412094,
+                    "volume_24h_reported": 120993203969.8504,
+                    "volume_change_24h": -9.8812,
+                    "percent_change_1h": 0.1873162,
+                    "percent_change_24h": 0.77840735,
+                    "percent_change_7d": 1.12191042,
+                    "percent_change_30d": 3.69944804,
+                    "percent_change_60d": 35.26952498,
+                    "percent_change_90d": 35.35477322,
+                    "market_cap": 2112901922442.6697,
+                    "market_cap_dominance": 63.703,
+                    "fully_diluted_market_cap": 2232373783687.52,
+                    "tvl": null,
+                    "last_updated": "2025-06-08T17:05:00.000Z"
+                }
+            }
+        },
+        "1027": {
+            "id": 1027,
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "slug": "ethereum",
+            "circulating_supply": 120723050.14925605,
+            "total_supply": 120723050.14925605,
+            "infinite_supply": true,
+            "self_reported_circulating_supply": null,
+            "self_reported_market_cap": null,
+            "tvl_ratio": null,
+            "last_updated": "2025-06-08T17:06:00.000Z",
+            "quote": {
+                "USD": {
+                    "price": 2533.7164611109547,
+                    "volume_24h": 10080682598.17824,
+                    "volume_24h_reported": 85209565722.6567,
+                    "volume_change_24h": -18.18,
+                    "percent_change_1h": 0.59115357,
+                    "percent_change_24h": 0.78071204,
+                    "percent_change_7d": -0.23930475,
+                    "percent_change_30d": 9.76160402,
+                    "percent_change_60d": 67.6644515,
+                    "percent_change_90d": 29.99491191,
+                    "market_cap": 305877979398.69336,
+                    "market_cap_dominance": 9.2221,
+                    "fully_diluted_market_cap": 305877979398.69,
+                    "tvl": null,
+                    "last_updated": "2025-06-08T17:06:00.000Z"
+                }
+            }
+        },
+        "5994": {
+            "id": 5994,
+            "name": "Shiba Inu",
+            "symbol": "SHIB",
+            "slug": "shiba-inu",
+            "circulating_supply": 589249398021027.9,
+            "total_supply": 589503932301883.2,
+            "infinite_supply": false,
+            "self_reported_circulating_supply": 589551575078137,
+            "self_reported_market_cap": 7471476061.050057,
+            "tvl_ratio": null,
+            "last_updated": "2025-06-08T17:05:00.000Z",
+            "quote": {
+                "USD": {
+                    "price": 0.000012673150877528934,
+                    "volume_24h": 87682260.39516963,
+                    "volume_24h_reported": 334612821.8711,
+                    "volume_change_24h": -15.7752,
+                    "percent_change_1h": 0.62180385,
+                    "percent_change_24h": -0.3901891,
+                    "percent_change_7d": -2.50743844,
+                    "percent_change_30d": -14.35435405,
+                    "percent_change_60d": 13.36091173,
+                    "percent_change_90d": 4.17549167,
+                    "market_cap": 7467646525.613585,
+                    "market_cap_dominance": 0.2251,
+                    "fully_diluted_market_cap": 7471490258.22,
+                    "tvl": null,
+                    "last_updated": "2025-06-08T17:05:00.000Z"
+                }
+            }
+        }
+    }
+}
