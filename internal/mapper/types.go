@@ -1,13 +1,5 @@
 package mapper
 
-// IDMapInterface defines the contract for CMC ID mapping operations
-type IDMapInterface interface {
-	FetchIDMap() (*CmcIdMapResponse, error)
-	UpdateDB() error
-	Initialize() error
-	GetIDMap() map[string]string
-}
-
 // CmcIdMapResponse is the struct to store the ID map from Coinmarketcap.
 // The CMC endpoint /map returns multiple tokens under the key "data"
 type CmcIdMapResponse struct {

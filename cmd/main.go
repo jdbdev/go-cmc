@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +18,7 @@ import (
 )
 
 // go-cmc app requires two services to run: internal/mapper and internal/ticker.
-// mapper service generates an ID map based on Coinmarketcap ID's for all tokens.
+// mapper service generates an ID map based on coin lookups (symbols) using Coinmarketcap API for ID mapping.
 // ticker service fetches up to date data for each token/coin in the ID map.
 // both services run concurrently at set intervals found in config/config.go file. Adjust based on API credit expenditure.
 // both services update the database with up to date data.
@@ -36,12 +37,13 @@ func main() {
 	slog.SetDefault(logger)
 	slog.Info("CMC API application starting - Version 0.1")
 
-	// Initialize Mapper Service (with dependency injection of app and logger)
-	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app, logger)
-	if err := IDMapSrvc.Initialize(); err != nil {
-		log.Fatal("Failed to initialize ID map to fetch data from Coinmarketcap", err)
-	}
-	// Initialize ticker service (with dependency injection of app and logger)
+	// Initialize http client
+	var client = &http.Client{}
+
+	// Initialize Mapper Service (with dependency injection of app, logger and client)
+	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app, logger, client)
+
+	// Initialize ticker service (with dependency injection of app, logger and client)
 	tickerService := ticker.NewTickerService(app, IDMapSrvc, logger)
 
 	//==========================================================================
