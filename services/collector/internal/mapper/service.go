@@ -10,12 +10,15 @@ import (
 	"github.com/jdbdev/go-cmc/config"
 )
 
+// Mapper service provides utilities to get CMC ID's for coins and unmarshal the response for use in other services.
+// Mapper only gets data from Coinmarketcap API. DB Updates are handled by internal/coins and internal/ticker services.
+
 // IDMapInterface defines the contract for CMC ID mapping operations
 type IDMapInterface interface {
 	GetCMCID(symbol string) ([]byte, error)
 	UnmarshalCMCID(body []byte, client *http.Client)
-	// LookupCMCTop10() (string, error)
-	// LookupCMCTop100() (string, error)
+	GetCMCTopCoins(limit int) ([]byte, error) // future feature
+
 }
 
 // IDMapService implements the IDMapInterface
@@ -73,3 +76,12 @@ func (i *IDMapService) GetCMCID(symbol string) ([]byte, error) {
 
 // UnmarshallCMCID unmarshalls the response body into CmcIdResponse struct (symbol -> CMCID)
 func (i *IDMapService) UnmarshalCMCID(body []byte, client *http.Client) {}
+
+// GetCMCTopCoins gets a set of top coins based on limit parameter (top 10, top 50, etc.)
+func (i *IDMapService) GetCMCTopCoins(limit int) ([]byte, error) {
+	i.logger.Info("getting top", "limit", limit)
+	// Build request
+	// Add query parameters to URL
+	// Execute the request
+	return nil, nil
+}
