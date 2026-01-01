@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/jdbdev/go-cmc/config"
 )
@@ -16,9 +17,8 @@ import (
 // IDMapInterface defines the contract for CMC ID mapping operations
 type IDMapInterface interface {
 	GetCMCID(symbol string) ([]byte, error)
+	GetCMCTopCoins(limit int) ([]byte, error)
 	UnmarshalCMCID(body []byte, client *http.Client)
-	GetCMCTopCoins(limit int) ([]byte, error) // future feature
-
 }
 
 // IDMapService implements the IDMapInterface
@@ -49,7 +49,7 @@ func (i *IDMapService) GetCMCID(symbol string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Set headers & Build queries
+	// Set headers & Build query parameters
 	q := url.Values{}
 	q.Add("symbol", symbol)
 	req.URL.RawQuery = q.Encode()
@@ -74,14 +74,38 @@ func (i *IDMapService) GetCMCID(symbol string) ([]byte, error) {
 	return body, nil
 }
 
-// UnmarshallCMCID unmarshalls the response body into CmcIdResponse struct (symbol -> CMCID)
-func (i *IDMapService) UnmarshalCMCID(body []byte, client *http.Client) {}
-
 // GetCMCTopCoins gets a set of top coins based on limit parameter (top 10, top 50, etc.)
 func (i *IDMapService) GetCMCTopCoins(limit int) ([]byte, error) {
-	i.logger.Info("getting top", "limit", limit)
+	i.logger.Info("getting top coins for:", "limit", limit)
 	// Build request
-	// Add query parameters to URL
+	req, err := http.NewRequest("GET", i.mapURL, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set headers & Build query parameters
+	q := url.Values{}
+	q.Add("limit", strconv.Itoa(limit))
+	q.Add("sort", "cmc_rank")
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("X-CMC_PRO_API_KEY", i.apiKey)
+
 	// Execute the request
-	return nil, nil
+	resp, err := i.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	// FOR TESTING ONLY. REMOVE WHEN DONE.
+	fmt.Println(string(body))
+
+	return body, nil
 }
+
+// UnmarshallCMCID unmarshalls the response body into CmcIdResponse struct (symbol -> CMCID)
+func (i *IDMapService) UnmarshalCMCID(body []byte, client *http.Client) {}

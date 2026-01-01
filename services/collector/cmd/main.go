@@ -19,7 +19,7 @@ import (
 
 // collector service (go-cmc)requires two services to run: internal/mapper and internal/ticker.
 // mapper service generates an ID map based on coin lookups (symbols) using Coinmarketcap API for ID mapping.
-// ticker service fetches up to date data for each token/coin in the ID map.
+// ticker service fetches up to date data for each token/coin in the DB.
 // both services run concurrently at set intervals found in config/config.go file. Adjust based on API credit expenditure.
 // both services update the database with up to date data.
 
@@ -72,9 +72,6 @@ func main() {
 			}
 		}
 	}
-
-	// Check and/or Initialize DB tables
-	// db.Initialize()
 
 	//==========================================================================
 	// Go Routine: Data Update Service

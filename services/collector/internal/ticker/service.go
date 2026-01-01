@@ -10,6 +10,9 @@ package ticker
 // Bitcoin CMC ID: 1
 // Ethereum CMC ID: 1027
 // Solana CMC ID: 5994
+// Sui CMC ID: 20947
+// Cardano CMC ID: 2010
+// ICP: 8916
 
 import (
 	"fmt"
@@ -26,6 +29,9 @@ import (
 
 var client = &http.Client{}
 
+// TEMP MAP ONLY. USE DB TABLE FOR ID MAP.
+var coinIDMap []string = []string{"1", "1027", "5994", "20947", "2010", "8916"}
+
 type TickerInterface interface {
 	FetchAndDecodeData() error
 	UpdateDB() error
@@ -36,7 +42,6 @@ type TickerService struct {
 	baseURL   string
 	quotesURL string
 	client    *http.Client
-	mapper    mapper.IDMapInterface // example: mapper.GetIDMap()
 	logger    *slog.Logger
 	// data    []TickerData // Add a field to store the decoded data
 }
@@ -48,7 +53,6 @@ func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface, l
 		baseURL:   app.CMC.BaseURL,
 		quotesURL: app.CMC.QuotesURL,
 		client:    client,
-		mapper:    mapService,
 		logger:    logger,
 	}
 }
@@ -65,12 +69,7 @@ func (t *TickerService) FetchAndDecodeData() error {
 	q := url.Values{}
 
 	// Collect all IDs from the map
-	var ids []string
-	for _, id := range t.mapper.GetIDMap() {
-		ids = append(ids, id)
-	}
-	// Join IDs with commas and add to query
-	q.Add("id", strings.Join(ids, ","))
+	q.Add("id", strings.Join(coinIDMap, ",")) // Join IDs with commas and add to query
 	q.Add("convert", "USD")
 
 	// Only get requested fields (automatically get price, market_cap, volume_24h, etc. in "quotes"):
