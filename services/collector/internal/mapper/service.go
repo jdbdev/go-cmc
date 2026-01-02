@@ -31,12 +31,34 @@ type IDMapService struct {
 
 // NewIDMapService creates a new instance of IDMapService struct
 func NewIDMapService(app *config.AppConfig, logger *slog.Logger, client *http.Client) *IDMapService {
+	// Validate required dependencies (panic if missing)
+	if app == nil {
+		panic("App configuration required to create IDMapService")
+	}
+	// Validate required dependencies (Warn if missing)
+	if logger == nil {
+		logger = slog.Default()
+	}
+	if app.CMC.APIKey == "" {
+		logger.Warn("No API key provided - requires API key")
+	}
+	if app.CMC.IDMapURL == "" {
+		logger.Warn("No ID map URL provided - requires ID map URL")
+	}
+	if client == nil {
+		logger.Warn("No HTTP client provided - requires HTTP client")
+	}
+
+	logger.Info("IDMapService initialized successfully")
+
+	// Return struct with values
 	return &IDMapService{
 		apiKey: app.CMC.APIKey,
 		mapURL: app.CMC.IDMapURL,
 		client: client,
 		logger: logger,
 	}
+
 }
 
 // LookupCMCID builds the request to look up the corresponding Coinmarketcap ID for a given symbol (ex. ETH -> 1027)

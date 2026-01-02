@@ -80,6 +80,7 @@ func main() {
 	//==========================================================================
 	// Coin Table Setup and Initialization
 	//==========================================================================
+
 	coinService.InitializeCoinTable()
 	trackedCoins, err := mapperService.GetCMCTopCoins(10)
 	if err != nil {

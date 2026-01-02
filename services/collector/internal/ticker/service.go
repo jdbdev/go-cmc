@@ -48,6 +48,26 @@ type TickerService struct {
 
 // NewTickerService creates a new instance of the TickerService struct
 func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface, logger *slog.Logger) *TickerService {
+	// Validate required dependencies (panic if missing)
+	if app == nil {
+		panic("App configuration required to create TickerService")
+	}
+	// Validate required dependencies (Warn if missing)
+	if logger == nil {
+		logger = slog.Default()
+	}
+	if app.CMC.APIKey == "" {
+		logger.Warn("No API key provided - requires API key")
+	}
+	if app.CMC.QuotesURL == "" {
+		logger.Warn("No quotes URL provided - requires quotes URL")
+	}
+	if client == nil {
+		logger.Warn("No HTTP client provided - requires HTTP client")
+	}
+	logger.Info("TickerService initialized successfully")
+
+	// Return struct with values
 	return &TickerService{
 		apiKey:    app.CMC.APIKey,
 		baseURL:   app.CMC.BaseURL,
