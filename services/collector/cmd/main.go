@@ -12,6 +12,7 @@ import (
 
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/db"
+	"github.com/jdbdev/go-cmc/internal/coins"
 	"github.com/jdbdev/go-cmc/internal/mapper"
 	"github.com/jdbdev/go-cmc/internal/ticker"
 	"github.com/joho/godotenv"
@@ -29,22 +30,25 @@ func main() {
 	// Configuration & Initialization/Setup
 	//==========================================================================
 
-	// Initialize config
-	app := Init()
-
-	// Initialize Logger
+	// Initialize Logger first (required for Init() and rest of app)
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 	slog.Info("CMC API application starting - Version 0.1")
+
+	// Initialize applicaiton configuration
+	app := Init(logger)
 
 	// Initialize http client
 	var client = &http.Client{}
 
 	// Initialize Mapper Service (with dependency injection of app, logger and client)
-	var IDMapSrvc mapper.IDMapInterface = mapper.NewIDMapService(app, logger, client)
+	var mapperService mapper.IDMapInterface = mapper.NewIDMapService(app, logger, client)
 
 	// Initialize ticker service (with dependency injection of app, logger and client)
-	tickerService := ticker.NewTickerService(app, IDMapSrvc, logger)
+	var tickerService ticker.TickerInterface = ticker.NewTickerService(app, mapperService, logger)
+
+	// Initialize coins service (with dependency injection of logger)
+	var coinService coins.CoinInterface = coins.NewCoinService(logger)
 
 	//==========================================================================
 	// Database Setup
@@ -72,6 +76,16 @@ func main() {
 			}
 		}
 	}
+
+	//==========================================================================
+	// Coin Table Setup and Initialization
+	//==========================================================================
+	coinService.InitializeCoinTable()
+	trackedCoins, err := mapperService.GetCMCTopCoins(10)
+	if err != nil {
+		logger.Error("Failed getting topcoins", "error", err)
+	}
+	fmt.Println(string(trackedCoins))
 
 	//==========================================================================
 	// Go Routine: Data Update Service
@@ -113,12 +127,11 @@ func main() {
 }
 
 // Init initializes the application configuration and prints to stdout basic information
-func Init() *config.AppConfig {
-	// Load .env file
-	if err := godotenv.Load(); err != nil {
-		log.Printf("Warning: Error loading .env file: %v", err)
+func Init(logger *slog.Logger) *config.AppConfig {
+	// Load .env file from root directory (monorepo structure)
+	if err := godotenv.Load("../../.env"); err != nil {
+		logger.Warn("Error loading .env file", "error", err)
 	}
-
 	app := config.NewAppConfig()
 	PrintSettings(app)
 	return app
