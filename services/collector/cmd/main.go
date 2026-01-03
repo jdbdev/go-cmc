@@ -55,26 +55,13 @@ func main() {
 	//==========================================================================
 
 	// Create connection to database
-	if app.AppCfg.UseDB {
-		database, err := db.NewDatabase(app)
-		if err != nil {
-			log.Fatal(err)
-		}
+	database, err := InitDatabase(app, logger)
+	if err != nil {
+		logger.Error("failed to initialize database", "error", err)
+	}
+	if database != nil {
 		defer database.Close()
-
-		// Set the global database instance
-		db.SetDatabase(database)
-
-		fmt.Println("Database connection successful")
-
-		// Simple Query to test connection
-		if db.IsConnected() {
-			if err := database.GetDB().Ping(); err != nil {
-				log.Printf("Database ping failed: %v", err)
-			} else {
-				log.Println("Database ping successful")
-			}
-		}
+		logger.Info("Database connection successful")
 	}
 
 	//==========================================================================
@@ -152,6 +139,10 @@ func InitServices(app *config.AppConfig, logger *slog.Logger, client *http.Clien
 }
 
 func InitDatabase(app *config.AppConfig, logger *slog.Logger) (*db.Database, error) {
+	if !app.AppCfg.UseDB {
+		logger.Info("Database disabled in settings - not in use")
+		return nil, nil
+	}
 	database, err := db.NewDatabase(app)
 	if err != nil {
 		log.Fatal(err)
