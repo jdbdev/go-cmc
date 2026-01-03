@@ -17,7 +17,7 @@ import (
 
 // IDMapInterface defines the contract for CMC ID mapping operations
 type IDMapInterface interface {
-	GetCMCID(symbol string) ([]byte, error)
+	GetCMCID(ctx context.Context, symbol string) ([]byte, error)
 	GetCMCTopCoins(ctx context.Context, limit int) ([]byte, error)
 	UnmarshalCMCID(body []byte, client *http.Client)
 }
@@ -63,7 +63,7 @@ func NewIDMapService(app *config.AppConfig, logger *slog.Logger, client *http.Cl
 }
 
 // LookupCMCID builds the request to look up the corresponding Coinmarketcap ID for a given symbol (ex. ETH -> 1027)
-func (i *IDMapService) GetCMCID(symbol string) ([]byte, error) {
+func (i *IDMapService) GetCMCID(ctx context.Context, symbol string) ([]byte, error) {
 	i.logger.Info("Looking up Coinmarketcap ID for:", "symbol", symbol)
 
 	// Build request
