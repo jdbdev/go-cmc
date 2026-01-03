@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -18,11 +19,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// collector service (go-cmc)requires two services to run: internal/mapper and internal/ticker.
-// mapper service generates an ID map based on coin lookups (symbols) using Coinmarketcap API for ID mapping.
+// Collector service (go-cmc)requires two services to run: internal/mapper and internal/ticker.
+// Mapper service generates an ID map based on coin lookups (symbols) using Coinmarketcap API for ID mapping.
 // ticker service fetches up to date data for each token/coin in the DB.
-// both services run concurrently at set intervals found in config/config.go file. Adjust based on API credit expenditure.
-// both services update the database with up to date data.
+// Services run concurrently at set intervals found in config/config.go file. Adjust based on API credit expenditure.
+// Services update the database with up to date data.
+// All configuration settings are stored in .env and loaded by config/config.go file.
 
 func main() {
 
@@ -78,15 +80,23 @@ func main() {
 	}
 
 	//==========================================================================
-	// Coin Table Setup and Initialization
+	// Service Calls with Context
 	//==========================================================================
 
-	coinService.InitializeCoinTable()
-	trackedCoins, err := mapperService.GetCMCTopCoins(10)
+	// mapperService calls with context timeout
+	ctx, cancel := context.WithTimeout(context.Background(), app.CMC.RequestTimeout)
+	defer cancel()
+
+	initialCoins, err := mapperService.GetCMCTopCoins(ctx, 2)
 	if err != nil {
 		logger.Error("Failed getting topcoins", "error", err)
+	} else {
+		fmt.Println(string(initialCoins))
 	}
-	fmt.Println(string(trackedCoins))
+
+	// tickerService calls with context timeout
+	// coinService calls with context timeout
+	coinService.InitializeCoinTable()
 
 	//==========================================================================
 	// Go Routine: Data Update Service
@@ -143,4 +153,5 @@ func PrintSettings(app *config.AppConfig) {
 	fmt.Printf("App in production: %v\n", app.AppCfg.InProduciton)
 	fmt.Printf("Use DB: %v\n", app.AppCfg.UseDB)
 	fmt.Printf("Base URL: %v\n", app.CMC.BaseURL)
+	fmt.Printf("Request Timeout: %v\n", app.CMC.RequestTimeout)
 }

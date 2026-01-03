@@ -32,13 +32,14 @@ type DBSettings struct {
 
 // CMCCOnfig holds Coinmarketcap API configuration
 type CMCSettings struct {
-	APIKey    string
-	BaseURL   string
-	QuotesURL string
-	IDMapURL  string
+	APIKey         string
+	BaseURL        string
+	QuotesURL      string
+	IDMapURL       string
+	RequestTimeout time.Duration
 }
 
-// IntervalSettings holds the time settings in secondsfor the ticker and mapper services
+// IntervalSettings holds the time settings in seconds for the ticker and mapper services
 type IntervalSettings struct {
 	TickerInterval time.Duration
 	MapperInterval time.Duration
@@ -55,10 +56,11 @@ func NewAppConfig() *AppConfig {
 			DBName:   getEnv("DB_NAME", "postgres"),
 		},
 		CMC: CMCSettings{
-			APIKey:    getEnv("CMC_API_KEY", "123"),
-			BaseURL:   getEnv("CMC_BASE_URL", ""),
-			QuotesURL: getEnv("CMC_QUOTES_URL", ""),
-			IDMapURL:  getEnv("CMC_ID_MAP_URL", ""),
+			APIKey:         getEnv("CMC_API_KEY", "123"),
+			BaseURL:        getEnv("CMC_BASE_URL", ""),
+			QuotesURL:      getEnv("CMC_QUOTES_URL", ""),
+			IDMapURL:       getEnv("CMC_ID_MAP_URL", ""),
+			RequestTimeout: getEnvAsDuration("CMC_REQUEST_TIMEOUT", "30s"),
 		},
 
 		AppCfg: AppSettings{

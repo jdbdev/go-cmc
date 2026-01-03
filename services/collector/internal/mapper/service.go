@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -17,7 +18,7 @@ import (
 // IDMapInterface defines the contract for CMC ID mapping operations
 type IDMapInterface interface {
 	GetCMCID(symbol string) ([]byte, error)
-	GetCMCTopCoins(limit int) ([]byte, error)
+	GetCMCTopCoins(ctx context.Context, limit int) ([]byte, error)
 	UnmarshalCMCID(body []byte, client *http.Client)
 }
 
@@ -97,10 +98,15 @@ func (i *IDMapService) GetCMCID(symbol string) ([]byte, error) {
 }
 
 // GetCMCTopCoins gets a set of top coins based on limit parameter (top 10, top 50, etc.)
-func (i *IDMapService) GetCMCTopCoins(limit int) ([]byte, error) {
+func (i *IDMapService) GetCMCTopCoins(ctx context.Context, limit int) ([]byte, error) {
 	i.logger.Info("getting top coins for:", "limit", limit)
+
+	// Validate limit parameter to be greater than 0
+	if limit <= 0 {
+		return nil, fmt.Errorf("limit value must be greater than 0, received %d", limit)
+	}
 	// Build request
-	req, err := http.NewRequest("GET", i.mapURL, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", i.mapURL, nil)
 	if err != nil {
 		return nil, err
 	}
