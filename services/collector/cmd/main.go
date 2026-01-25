@@ -65,7 +65,7 @@ func main() {
 	}
 
 	//==========================================================================
-	// Service Calls with Context
+	// Service Calls
 	//==========================================================================
 
 	// mapperService calls with context timeout
@@ -76,35 +76,20 @@ func main() {
 	if err != nil {
 		logger.Error("Failed getting topcoins", "error", err)
 	} else {
-		fmt.Println(string(initialCoins))
+		fmt.Println(string(initialCoins)) // convert []byte to string for testing only
 	}
 
 	// tickerService calls with context timeout
 	// coinService calls with context timeout
 
 	//==========================================================================
-	// Go Routine: Data Update Service
+	// Go Routines
 	//==========================================================================
 
-	// Call CMC API every x seconds and update DB
-	// Loop will continue even with errors
-	timeInterval := app.Interval.TickerInterval
-	updater := time.NewTicker(timeInterval)
-	go func() {
-		for range updater.C {
-			fmt.Println("Updating CMC Data...")
-
-			if err := services.Ticker.FetchAndDecodeData(); err != nil {
-				log.Printf("Error fetching CMC data: %v", err)
-				continue
-			}
-
-		}
-	}()
-	defer updater.Stop()
+	go updateCoinQuotes(app, logger)
 
 	//==========================================================================
-	// Application Shutdown
+	// Application Shutdown (blocks main() thread until shutdown)
 	//==========================================================================
 
 	// Wait for interrupt signal to gracefully shut down
@@ -115,7 +100,7 @@ func main() {
 	fmt.Println("Shutting down gracefully...")
 }
 
-// Init initializes the application configuration and prints to stdout basic information
+// InitConfig initializes the application configuration and prints to stdout basic information
 func InitConfig(logger *slog.Logger) *config.AppConfig {
 	// Load .env file from root directory (monorepo structure)
 	if err := godotenv.Load("../../.env"); err != nil {
@@ -126,10 +111,11 @@ func InitConfig(logger *slog.Logger) *config.AppConfig {
 	return app
 }
 
+// InitServices initializes the internal services Mapper, Ticker and Coins.
 func InitServices(app *config.AppConfig, logger *slog.Logger, client *http.Client) *Services {
 	mapperService := mapper.NewIDMapService(app, logger, client)
-	tickerService := ticker.NewTickerService(app, mapperService, logger)
 	coinService := coins.NewCoinService(logger)
+	tickerService := ticker.NewTickerService(app, coinService, logger)
 
 	return &Services{
 		Mapper: mapperService,
@@ -138,17 +124,29 @@ func InitServices(app *config.AppConfig, logger *slog.Logger, client *http.Clien
 	}
 }
 
+// InitDatabase initializes the database instance if enabled in settings
 func InitDatabase(app *config.AppConfig, logger *slog.Logger) (*db.Database, error) {
 	if !app.AppCfg.UseDB {
 		logger.Info("Database disabled in settings - not in use")
 		return nil, nil
 	}
+	// Create new Database instance in db/postgres.go
 	database, err := db.NewDatabase(app)
 	if err != nil {
 		log.Fatal(err)
 	}
 	db.SetDatabase(database)
 	return database, nil
+}
+
+// updateCoinQuotes orchestrates calls to the API and DB updates with new data on set time interval.
+func updateCoinQuotes(app *config.AppConfig, logger *slog.Logger) {
+	timeInterval := app.Interval.TickerInterval
+	ticker := time.NewTicker(timeInterval) // returns a *time.Ticker channel that reads from the channel C at set interval
+	defer ticker.Stop()                    // stop ticker at function exit
+	for range ticker.C {
+		logger.Info("calling API to update coin quotes")
+	}
 }
 
 // TEMP HELPERS ONLY. REMOVE WHEN DONE.

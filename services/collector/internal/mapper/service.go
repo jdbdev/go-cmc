@@ -129,8 +129,6 @@ func (i *IDMapService) GetCMCTopCoins(ctx context.Context, limit int) ([]byte, e
 	if err != nil {
 		return nil, err
 	}
-	// FOR TESTING ONLY. REMOVE WHEN DONE.
-	fmt.Println(string(body))
 
 	return body, nil
 }

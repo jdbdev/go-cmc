@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/jdbdev/go-cmc/config"
-	"github.com/jdbdev/go-cmc/internal/mapper"
+	"github.com/jdbdev/go-cmc/internal/coins"
 	"github.com/jdbdev/go-cmc/utils"
 )
 
@@ -43,11 +43,12 @@ type TickerService struct {
 	quotesURL string
 	client    *http.Client
 	logger    *slog.Logger
+	coins     coins.CoinInterface
 	// data    []TickerData // Add a field to store the decoded data
 }
 
 // NewTickerService creates a new instance of the TickerService struct
-func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface, logger *slog.Logger) *TickerService {
+func NewTickerService(app *config.AppConfig, coinService coins.CoinInterface, logger *slog.Logger) *TickerService {
 	// Validate required dependencies (panic if missing)
 	if app == nil {
 		panic("App configuration required to create TickerService")
@@ -74,6 +75,7 @@ func NewTickerService(app *config.AppConfig, mapService mapper.IDMapInterface, l
 		quotesURL: app.CMC.QuotesURL,
 		client:    client,
 		logger:    logger,
+		coins:     coinService,
 	}
 }
 
