@@ -72,11 +72,11 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), app.CMC.RequestTimeout)
 	defer cancel()
 
-	initialCoins, err := services.Mapper.GetCMCTopCoins(ctx, 2)
+	initialCoins, err := services.Mapper.GetCMCTopCoins(ctx, 5)
 	if err != nil {
 		logger.Error("Failed getting topcoins", "error", err)
 	} else {
-		fmt.Println(string(initialCoins)) // convert []byte to string for testing only
+		logger.Info("Initial top coins: %s", "data", string(initialCoins)) // convert []byte to string for testing only
 	}
 
 	// tickerService calls with context timeout
@@ -86,7 +86,7 @@ func main() {
 	// Go Routines
 	//==========================================================================
 
-	go updateCoinQuotes(app, logger)
+	go updateCoinQuotes(app, logger, services)
 
 	//==========================================================================
 	// Application Shutdown (blocks main() thread until shutdown)
@@ -140,16 +140,30 @@ func InitDatabase(app *config.AppConfig, logger *slog.Logger) (*db.Database, err
 }
 
 // updateCoinQuotes orchestrates calls to the API and DB updates with new data on set time interval.
-func updateCoinQuotes(app *config.AppConfig, logger *slog.Logger) {
+func updateCoinQuotes(app *config.AppConfig, logger *slog.Logger, services *Services) {
 	timeInterval := app.Interval.TickerInterval
 	ticker := time.NewTicker(timeInterval) // returns a *time.Ticker channel that reads from the channel C at set interval
 	defer ticker.Stop()                    // stop ticker at function exit
 	for range ticker.C {
-		logger.Info("calling API to update coin quotes")
+		// Create new context with timeout for each iteration of API call
+		ctx, cancel := context.WithTimeout(context.Background(), app.CMC.RequestTimeout)
+
+		// Call API (fetchAndDecodeData() in internal/ticker/service.go).
+		cmcResponse, err := services.Ticker.FetchAndDecodeData(ctx)
+		if err != nil {
+			logger.Error("failed to fetch and decode data", "error", err)
+			cancel()
+			continue
+		}
+		cancel()
+
+		// DEBUGGING ONLY REMOVE BEFORE PRODUCTION.
+		logger.Info("Response body unmarshalled intoCMCResponse: %+v\n", "data", cmcResponse.Data)
+
 	}
 }
 
-// TEMP HELPERS ONLY. REMOVE WHEN DONE.
+// TEMP HELPERS ONLY. REMOVE BEFORE PRODUCTION.
 func PrintSettings(app *config.AppConfig) {
 	fmt.Printf("App in production: %v\n", app.AppCfg.InProduciton)
 	fmt.Printf("Use DB: %v\n", app.AppCfg.UseDB)

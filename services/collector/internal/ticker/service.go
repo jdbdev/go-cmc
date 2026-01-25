@@ -15,6 +15,7 @@ package ticker
 // ICP: 8916
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -22,9 +23,10 @@ import (
 	"net/url"
 	"strings"
 
+	"encoding/json"
+
 	"github.com/jdbdev/go-cmc/config"
 	"github.com/jdbdev/go-cmc/internal/coins"
-	"github.com/jdbdev/go-cmc/utils"
 )
 
 var client = &http.Client{}
@@ -33,7 +35,7 @@ var client = &http.Client{}
 var coinIDMap []string = []string{"1", "1027", "5994", "20947", "2010", "8916"}
 
 type TickerInterface interface {
-	FetchAndDecodeData() error
+	FetchAndDecodeData(ctx context.Context) (*CMCResponse, error)
 	UpdateDB() error
 }
 
@@ -80,11 +82,13 @@ func NewTickerService(app *config.AppConfig, coinService coins.CoinInterface, lo
 }
 
 // FetchAndDecodeData gets and decodes data from CMC
-func (t *TickerService) FetchAndDecodeData() error {
-	client := t.client
-	req, err := http.NewRequest("GET", t.quotesURL, nil)
+func (t *TickerService) FetchAndDecodeData(ctx context.Context) (*CMCResponse, error) {
+
+	// Create new request with context
+	req, err := http.NewRequestWithContext(ctx, "GET", t.quotesURL, nil)
 	if err != nil {
-		return err
+		t.logger.Error("failed to create request", "error", err)
+		return nil, err
 	}
 
 	// Build query parameters
@@ -107,33 +111,47 @@ func (t *TickerService) FetchAndDecodeData() error {
 	// Add query parameters to URL
 	req.URL.RawQuery = q.Encode()
 
-	// Debug URL
-	fmt.Printf("Making request to: %s\n", req.URL.String())
-
 	// Execute request
-	resp, err := client.Do(req)
+	resp, err := t.client.Do(req)
 	if err != nil {
-		return err
+		t.logger.Error("HTTP request failed", "error", err, "url", req.URL.String())
+		return nil, err
+	} else {
+		t.logger.Info("HTTP request successful", "status", resp.Status, "url", req.URL.String())
 	}
 	defer resp.Body.Close()
-
-	// Print Response Status
-	fmt.Printf("Response Status: %s\n", resp.Status)
 
 	// Read and debug response body
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
-	}
-	fmt.Printf("Response Body: %s\n\n\n", string(respBody))
-
-	// Write response body to file (provide file name)
-	err = utils.WriteJSONToFile(respBody, "sample_response")
-	if err != nil {
-		return err
+		t.logger.Error("failed to read response body", "error", err)
+		return nil, err
 	}
 
-	return nil
+	// Unmarshal JSON response into CMCResponse struct
+	var cmcResponse CMCResponse
+	if err := json.Unmarshal(respBody, &cmcResponse); err != nil {
+		t.logger.Error("failed to unmarshal response", "error", err)
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	// Check for API errors
+	if cmcResponse.Status.ErrorCode != 0 {
+		errorMsg := "API error"
+		if cmcResponse.Status.ErrorMessage != nil {
+			errorMsg = *cmcResponse.Status.ErrorMessage
+		}
+		t.logger.Error("Coinmarketcap API returned error",
+			"error_code", cmcResponse.Status.ErrorCode,
+			"error_message", errorMsg,
+			"credit_count", cmcResponse.Status.CreditCount)
+		return nil, fmt.Errorf("API error (code %d): %s", cmcResponse.Status.ErrorCode, errorMsg)
+	}
+
+	t.logger.Info("Successfully fetched and decoded CMC data",
+		"coins_count", len(cmcResponse.Data),
+		"credit_count", cmcResponse.Status.CreditCount)
+	return &cmcResponse, nil
 }
 
 // UpdateDB updates the database with data from CMC
