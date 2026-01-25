@@ -3,7 +3,9 @@ version: '3.8'
 services:
   collector:
     container_name: go-cmc-collector
-    build: ./services/collector
+    build:
+      context: .
+      dockerfile: ./services/collector/Dockerfile
     ports:
       - "8080:8080"
     env_file:
